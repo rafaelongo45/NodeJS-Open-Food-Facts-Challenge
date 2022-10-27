@@ -2,16 +2,16 @@ import express from "express";
 import dotenv from "dotenv";
 import chalk from "chalk";
 
-import systemHealthRouter from "../routers/systemHealthRouter.js";
+import systemHealthRouter from "./routers/appHealthRouter.js";
 
 dotenv.config();
 
-const port = process.env.PORT || 5000;
+const port = +process.env.PORT || 5000;
 const app = express();
 
 app.use(express.json());
 app.use(systemHealthRouter);
 
 app.listen(port, () =>
-  console.log(chalk.bold.green("Server is up and running!"))
+  console.log(chalk.bold.green(`Server is up and running on port ${port}`))
 );
