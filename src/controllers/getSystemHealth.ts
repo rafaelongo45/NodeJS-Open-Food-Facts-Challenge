@@ -19,6 +19,7 @@ async function getSystemHealth(req: Request, res: Response) {
     write: writeMessage,
     read: readMessage,
   };
+  
   try {
     return res.status(200).send(systemHealth);
   } catch (e) {

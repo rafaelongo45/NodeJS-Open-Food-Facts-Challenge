@@ -7,6 +7,6 @@ import getSystemHealth from "../controllers/getSystemHealth.js";
 
 const appHealthRouter = Router();
 
-appHealthRouter.get("/", writeStatus, readStatus, checkDBCon, getSystemHealth);
+appHealthRouter.get("/", checkDBCon, writeStatus, readStatus, getSystemHealth);
 
 export default appHealthRouter;
