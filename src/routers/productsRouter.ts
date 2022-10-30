@@ -22,10 +22,22 @@ productsRouter.get("/products", async (req, res) => {
   return res.status(200).send(data);
 });
 
-productsRouter.get("/products/:code", async(req, res) => {
+productsRouter.get("/products/:code", async (req, res) => {
   const { code } = req.params;
-  const data = await db.collection("products").find({ code: parseInt(code) }).toArray();
+  const data = await db
+    .collection("products")
+    .find({ code: parseInt(code) })
+    .toArray();
   return res.status(200).send(data);
-})
+});
+
+productsRouter.delete("/products/:code", async (req, res) => {
+  const { code } = req.params;
+
+  await db
+    .collection("products")
+    .updateOne({ code: parseInt(code) }, { $set: { status: "trash" } });
+  return res.status(200).send("Product status changed to trash");
+});
 
 export default productsRouter;

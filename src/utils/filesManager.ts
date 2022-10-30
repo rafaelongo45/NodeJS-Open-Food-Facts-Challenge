@@ -72,9 +72,9 @@ async function insertToDB(filename) {
     arr.push(JSON.parse(file[i]));
   }
   const Status = Object.freeze({
-    Draft: Symbol("draft"),
-    Published: Symbol("published"),
-    Trash: Symbol("trash"),
+    Draft: "draft",
+    Published: "published",
+    Trash: "trash",
   });
 
   for (let i = 0; i < arr.length; i++) {
