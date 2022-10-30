@@ -34,6 +34,11 @@ productsRouter.get("/products/:code", async (req, res) => {
 productsRouter.delete("/products/:code", async (req, res) => {
   const { code } = req.params;
 
+  const product = await db
+    .collection("products")
+    .findOne({ code: parseInt(code) });
+  if (product.status === "trash")
+    return res.status(409).send("Product is already set to trash");
   await db
     .collection("products")
     .updateOne({ code: parseInt(code) }, { $set: { status: "trash" } });
