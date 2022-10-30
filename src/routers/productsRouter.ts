@@ -31,6 +31,21 @@ productsRouter.get("/products/:code", async (req, res) => {
   return res.status(200).send(data);
 });
 
+productsRouter.put("/products/:code", async (req, res) => {
+  const { code } = req.params;
+  const body = req.body;
+
+  const product = await db
+    .collection("products")
+    .findOne({ code: parseInt(code) });
+  console.log(product);
+  await db
+    .collection("products")
+    .updateOne({ code: parseInt(code) }, { $set: { ...product, ...body } });
+
+  return res.status(200).send("Updated successfully");
+});
+
 productsRouter.delete("/products/:code", async (req, res) => {
   const { code } = req.params;
 
@@ -46,3 +61,5 @@ productsRouter.delete("/products/:code", async (req, res) => {
 });
 
 export default productsRouter;
+
+//TODO: Add try catch structure to functions
