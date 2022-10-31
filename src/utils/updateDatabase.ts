@@ -7,10 +7,9 @@ import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 
 export function cronFunction() {
   cron.schedule(
-    "0 0 0 * * *",
+    "0 20 17 * * *",
     async () => {
       await updateDb();
-      console.log("oi");
       await saveCronTime();
     },
     { scheduled: true, timezone: "America/Sao_Paulo" }
@@ -26,7 +25,6 @@ export async function saveCronTime() {
 
 export async function updateDb() {
   let names;
-  let str = "dado inserido";
   try {
     const getNames = await axios.get(
       "https://challenges.coode.sh/food/data/json/index.txt"

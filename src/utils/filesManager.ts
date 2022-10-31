@@ -32,7 +32,7 @@ export async function extractFile(filename: string) {
     .pipe(
       unzip.on("data", () => {
         sum++;
-        if (sum > 3) fileStream.close();
+        if (sum > 6) fileStream.close();
       })
     )
     .pipe(writeStream);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import db from "../app.js";
 
 import appStatus from "../services/getAppStatus.js";
+import cronRepository from "../repositories/cronRepository.js";
 
 interface SystemHealth {
   uptime: string;
@@ -14,14 +14,14 @@ interface SystemHealth {
 
 async function getSystemHealth(req: Request, res: Response) {
   const { writeMessage, readMessage, connectionMessage } = res.locals;
-  const time = await getCronTime();
+  const cronTime = await cronRepository.getLastTime();
   const appInfo = appStatus();
   const systemHealth: SystemHealth = {
     ...appInfo,
+    cronTime,
     connection: connectionMessage,
     write: writeMessage,
     read: readMessage,
-    cronTime: time,
   };
 
   try {
@@ -32,18 +32,8 @@ async function getSystemHealth(req: Request, res: Response) {
   }
 }
 
-async function getCronTime() {
-  try {
-    const time = await db
-      .collection("cron_history")
-      .find({})
-      .sort({ time: -1 })
-      .limit(1)
-      .toArray();
-    return time[0].time;
-  } catch (e) {
-    console.log(e);
-  }
-}
+const systemHealthController = {
+  getSystemHealth,
+};
 
-export default getSystemHealth;
+export default systemHealthController;
