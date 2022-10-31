@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import chalk from "chalk";
 
 import systemHealthRouter from "./routers/appHealthRouter.js";
-import updateDBRouter from "./routers/updateDBRouter.js";
 import productsRouter from "./routers/productsRouter.js";
+import { cronFunction } from "./utils/updateDatabase.js";
 
 dotenv.config();
 
@@ -13,9 +13,9 @@ const app = express();
 
 app.use(express.json());
 app.use(systemHealthRouter);
-app.use(updateDBRouter);
 app.use(productsRouter);
 
-app.listen(port, () =>
-  console.log(chalk.bold.green(`Server is up and running on port ${port}`))
-);
+app.listen(port, () => {
+  cronFunction();
+  console.log(chalk.bold.green(`Server is up and running on port ${port}`));
+});

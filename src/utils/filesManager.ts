@@ -4,85 +4,56 @@ import axios from "axios";
 
 import db from "../app.js";
 
-export async function downloadFile() {
-  const filename = "products_01.json.gz";
-  const fileExists = await db
-    .collection("filename")
-    .find({ name: filename })
-    .toArray();
-  let str = "dados ja estavam inseridos";
-  if (fileExists.length === 0) {
-    const url = `https://challenges.coode.sh/food/data/json/${filename}`;
+export async function downloadFile(filename) {
+  const url = `https://challenges.coode.sh/food/data/json/${filename}`;
+  try {
     const writeStream = fs.createWriteStream(
-      "./src/utils/downloads/products_01.gz"
+      `./src/utils/downloads/${filename}`
     );
-    const promise = axios.get(url, { responseType: "stream" });
-    promise.then((response) => {
+    await axios.get(url, { responseType: "stream" }).then((response) => {
       response.data.pipe(
         writeStream.on("finish", () => {
-          extractFile(filename).then(() =>
-            fs.unlinkSync("./src/utils/downloads/products_01.gz")
-          );
+          console.log(`file ${filename} downloaded`);
         })
       );
     });
-    str = "dados inseridos";
+  } catch (e) {
+    console.log(e);
   }
-
-  checkIfExists();
-  return str;
 }
 
-async function extractFile(filename) {
-  const fileStream = fs.createReadStream(
-    "./src/utils/downloads/products_01.gz"
-  );
+export async function extractFile(filename: string) {
+  const name = filename.replace(".json.gz", ".txt");
+  const fileStream = fs.createReadStream(`./src/utils/downloads/${filename}`);
   const unzip = zlib.createGunzip();
-  const writeStream = fs.createWriteStream("./src/utils/downloads/file1.txt");
+  let sum = 0;
+  const writeStream = fs.createWriteStream(`./src/utils/downloads/${name}`);
   fileStream
     .pipe(
       unzip.on("data", () => {
-        fileStream.close();
+        sum++;
+        if (sum === 4) fileStream.destroy();
       })
     )
     .pipe(writeStream);
 }
 
-function callPopulate() {
-  const filename = "products_01.json.gz";
-  insertToDB(filename);
-}
-
-function checkIfExists() {
-  const fileExists = fs.existsSync("./src/utils/downloads/file1.txt");
-  if (fileExists) {
-    callPopulate();
-  } else {
-    setTimeout(() => checkIfExists(), 3000);
-  }
-}
-
-async function insertToDB(filename) {
+export async function insertToDB(name) {
   const arr = [];
   const file = fs
-    .readFileSync("src/utils/downloads/file1.txt", "utf8")
+    .readFileSync(`src/utils/downloads/${name}`, "utf8")
     .split(/\r?\n/);
-  console.log(file);
   for (let i = 0; i < 100; i++) {
     arr.push(JSON.parse(file[i]));
   }
-  const Status = Object.freeze({
-    Draft: "draft",
-    Published: "published",
-    Trash: "trash",
-  });
 
+  const dateTime = new Date();
   for (let i = 0; i < arr.length; i++) {
-    const dateTime = new Date();
     arr[i].code = arr[i].code.slice(1);
+
     const objectData = {
       code: parseInt(arr[i].code),
-      status: Status.Published,
+      status: "published",
       imported_t: dateTime.toISOString(),
       url: arr[i].url,
       creator: arr[i].creator,
@@ -105,10 +76,11 @@ async function insertToDB(filename) {
       main_category: arr[i].main_category,
       image_url: arr[i].image_url,
     };
+
     await db.collection("products").insertOne(objectData);
+    console.log("dado inserido");
   }
 
-  await db.collection("filename").insertOne({ name: filename });
-  fs.unlinkSync("./src/utils/downloads/file1.txt");
+  await db.collection("filename").insertOne({ name: name });
   return arr;
 }
