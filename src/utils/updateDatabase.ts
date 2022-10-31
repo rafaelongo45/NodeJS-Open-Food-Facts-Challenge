@@ -1,3 +1,4 @@
+import fs from "fs";
 import axios from "axios";
 import * as cron from "node-cron";
 
@@ -6,7 +7,7 @@ import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 
 export function cronFunction() {
   cron.schedule(
-    "0 31 21 * * *",
+    "0 0 0 * * *",
     async () => {
       await updateDb();
       console.log("oi");
@@ -23,7 +24,7 @@ export async function saveCronTime() {
   await db.collection("cron_history").insertOne({ time: cronTime });
 }
 
-async function updateDb() {
+export async function updateDb() {
   let names;
   let str = "dado inserido";
   try {
@@ -45,6 +46,8 @@ async function updateDb() {
         for (let i = 0; i < names.length; i++) {
           const name = names[i].replace(".json.gz", ".txt");
           await insertToDB(name);
+          fs.unlinkSync(`src/utils/downloads/${names[i]}`);
+          fs.unlinkSync(`src/utils/downloads/${name}`);
         }
       }
     }, 10000);

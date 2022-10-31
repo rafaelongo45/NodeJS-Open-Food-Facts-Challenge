@@ -32,7 +32,7 @@ export async function extractFile(filename: string) {
     .pipe(
       unzip.on("data", () => {
         sum++;
-        if (sum === 4) fileStream.destroy();
+        if (sum > 3) fileStream.close();
       })
     )
     .pipe(writeStream);
@@ -82,5 +82,6 @@ export async function insertToDB(name) {
   }
 
   await db.collection("filename").insertOne({ name: name });
+
   return arr;
 }
