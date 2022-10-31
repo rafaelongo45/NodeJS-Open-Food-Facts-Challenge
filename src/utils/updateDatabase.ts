@@ -7,7 +7,7 @@ import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 
 export function cronFunction() {
   cron.schedule(
-    "0 20 17 * * *",
+    "0 02 18 * * *",
     async () => {
       await updateDb();
       await saveCronTime();
@@ -32,6 +32,15 @@ export async function updateDb() {
     names = getNames.data.trim().split("\n");
     let lastFile = names[names.length - 1];
     let lastFileName = lastFile.replace(".json.gz", ".txt");
+    const [lastFileUpdated] = await db
+      .collection("filename")
+      .find({})
+      .limit(1)
+      .sort({ _id: -1 })
+      .toArray();
+    if (lastFileUpdated.name === lastFileName) {
+      return console.log("Database is already updated");
+    }
     for (let i = 0; i < names.length; i++) {
       await downloadFile(names[i]);
     }
