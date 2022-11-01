@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import dotenv from "dotenv";
 import express from "express";
 import "express-async-errors";
@@ -17,5 +16,5 @@ app.use(errorHandler);
 
 app.listen(port, () => {
   cronFunction();
-  console.log(chalk.bold.green(`Server is up and running on port ${port}`));
+  console.log(`Server is up and running on port ${port}`);
 });

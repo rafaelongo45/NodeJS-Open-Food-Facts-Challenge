@@ -1,14 +1,8 @@
-import productsRepository from "../repositories/productsRepositor.js";
+import productsRepository from "../repositories/productsRepository.js";
 
 async function getProducts(page: number, skipAmount: number) {
   let products;
-  if (page <= 0) {
-    throw {
-      type: "productError",
-      message: "Page number can't be equal or less than 0",
-      code: 400,
-    };
-  }
+  isPageNumberValid(page);
   page
     ? (products = await productsRepository.getAllProductsWithLimit(skipAmount))
     : (products = await productsRepository.getAllProducts());
@@ -16,47 +10,28 @@ async function getProducts(page: number, skipAmount: number) {
 }
 
 async function getOne(numericCode: number, isInteger: boolean) {
-  if (!numericCode || !isInteger) {
-    throw {
-      type: "productError",
-      message: "Code is not a number or not an integer",
-      code: 400,
-    };
-  }
-
-  const [product] = await productsRepository.getSpecificProduct(numericCode);
-  if (!product) {
-    throw {
-      type: "productError",
-      message: "No product with given code",
-      code: 404,
-    };
-  }
-
-  return product;
+  checkCodeAndInteger(numericCode, isInteger);
+  const product = await productsRepository.getSpecificProduct(numericCode);
+  checkIfExists(product);
+  return product[0];
 }
 
 async function update(numericCode: number, isInteger: boolean, body) {
-  if (!numericCode || !isInteger) {
-    throw {
-      type: "productError",
-      message: "Code is not a number or not an integer",
-      code: 400,
-    };
-  }
-
-  const [product] = await productsRepository.getSpecificProduct(numericCode);
-  if (!product) {
-    throw {
-      type: "productError",
-      message: "No product with given code",
-      code: 404,
-    };
-  }
-  await productsRepository.updateProduct(numericCode, product, body);
+  checkCodeAndInteger(numericCode, isInteger);
+  const product = await productsRepository.getSpecificProduct(numericCode);
+  checkIfExists(product);
+  await productsRepository.updateProduct(numericCode, body);
 }
 
-async function deleteProduct(numericCode, isInteger){
+async function deleteProduct(numericCode: number, isInteger: boolean) {
+  checkCodeAndInteger(numericCode, isInteger);
+  const [product] = await productsRepository.getSpecificProduct(numericCode);
+  checkIfExists(product);
+  checkIfDeleted(product);
+  await productsRepository.deleteProduct(numericCode);
+}
+
+function checkCodeAndInteger(numericCode: number, isInteger: boolean) {
   if (!numericCode || !isInteger) {
     throw {
       type: "productError",
@@ -64,17 +39,19 @@ async function deleteProduct(numericCode, isInteger){
       code: 400,
     };
   }
+}
 
-  const [product] = await productsRepository.getSpecificProduct(numericCode);
-
-  if (!product) {
+function checkIfExists(product) {
+  if (product.length === 0) {
     throw {
       type: "productError",
       message: "No product with given code",
       code: 404,
     };
   }
+}
 
+function checkIfDeleted(product) {
   if (product.status === "trash") {
     throw {
       type: "productError",
@@ -82,14 +59,23 @@ async function deleteProduct(numericCode, isInteger){
       code: 409,
     };
   }
-  await productsRepository.deleteProduct(numericCode);
+}
+
+function isPageNumberValid(page: number) {
+  if (page <= 0) {
+    throw {
+      type: "productError",
+      message: "Page number can't be equal or less than 0",
+      code: 400,
+    };
+  }
 }
 
 const productsService = {
   getProducts,
   getOne,
   update,
-  deleteProduct
+  deleteProduct,
 };
 
 export default productsService;
