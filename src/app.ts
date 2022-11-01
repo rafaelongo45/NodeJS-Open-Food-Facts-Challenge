@@ -12,7 +12,7 @@ try {
   db = mongoClient.db(process.env.DATABASE);
   console.log(
     chalk.bold.blue(
-      `Connected to database ${chalk.bold.yellow(process.env.COLLECTION)}`
+      `Connected to database ${chalk.bold.yellow(process.env.DATABASE)}`
     )
   );
 } catch (e) {
