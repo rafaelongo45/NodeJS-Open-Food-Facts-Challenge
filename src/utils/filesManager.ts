@@ -7,15 +7,9 @@ import db from "../app.js";
 export async function downloadFile(filename) {
   const url = `https://challenges.coode.sh/food/data/json/${filename}`;
   try {
-    const writeStream = fs.createWriteStream(
-      `./src/utils/downloads/${filename}`
-    );
+    const writeStream = fs.createWriteStream(`./src/utils/${filename}`);
     await axios.get(url, { responseType: "stream" }).then((response) => {
-      response.data.pipe(
-        writeStream.on("finish", () => {
-          console.log(`file ${filename} downloaded`);
-        })
-      );
+      response.data.pipe(writeStream);
     });
   } catch (e) {
     console.log(e);
@@ -24,10 +18,10 @@ export async function downloadFile(filename) {
 
 export async function extractFile(filename: string) {
   const name = filename.replace(".json.gz", ".txt");
-  const fileStream = fs.createReadStream(`./src/utils/downloads/${filename}`);
+  const fileStream = fs.createReadStream(`./src/utils/${filename}`);
   const unzip = zlib.createGunzip();
   let sum = 0;
-  const writeStream = fs.createWriteStream(`./src/utils/downloads/${name}`);
+  const writeStream = fs.createWriteStream(`./src/utils/${name}`);
   fileStream
     .pipe(
       unzip.on("data", () => {
@@ -40,9 +34,7 @@ export async function extractFile(filename: string) {
 
 export async function insertToDB(name) {
   const arr = [];
-  const file = fs
-    .readFileSync(`src/utils/downloads/${name}`, "utf8")
-    .split(/\r?\n/);
+  const file = fs.readFileSync(`src/utils/${name}`, "utf8").split(/\r?\n/);
   for (let i = 0; i < 100; i++) {
     arr.push(JSON.parse(file[i]));
   }
@@ -78,7 +70,6 @@ export async function insertToDB(name) {
     };
 
     await db.collection("products").insertOne(objectData);
-    console.log("dado inserido");
   }
 
   await db.collection("filename").insertOne({ name: name });

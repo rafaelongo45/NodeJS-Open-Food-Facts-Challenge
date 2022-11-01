@@ -7,7 +7,7 @@ import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 
 export function cronFunction() {
   cron.schedule(
-    "0 02 18 * * *",
+    "0 43 18 * * *",
     async () => {
       await updateDb();
       await saveCronTime();
@@ -38,7 +38,7 @@ export async function updateDb() {
       .limit(1)
       .sort({ _id: -1 })
       .toArray();
-    if (lastFileUpdated.name === lastFileName) {
+    if (lastFileUpdated && lastFileUpdated.name === lastFileName) {
       return console.log("Database is already updated");
     }
     for (let i = 0; i < names.length; i++) {
@@ -53,8 +53,8 @@ export async function updateDb() {
         for (let i = 0; i < names.length; i++) {
           const name = names[i].replace(".json.gz", ".txt");
           await insertToDB(name);
-          fs.unlinkSync(`src/utils/downloads/${names[i]}`);
-          fs.unlinkSync(`src/utils/downloads/${name}`);
+          fs.unlinkSync(`src/utils/${names[i]}`);
+          fs.unlinkSync(`src/utils/${name}`);
         }
       }
     }, 10000);
