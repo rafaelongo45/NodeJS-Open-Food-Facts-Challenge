@@ -7,7 +7,7 @@ import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 
 export function cronFunction() {
   cron.schedule(
-    "0 43 18 * * *",
+    "0 0 0 * * *",
     async () => {
       await updateDb();
       await saveCronTime();

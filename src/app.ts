@@ -9,7 +9,7 @@ const dbString: string = process.env.DB_CONN_STRING;
 try {
   const mongoClient = new MongoClient(dbString);
   await mongoClient.connect();
-  db = mongoClient.db(process.env.COLLECTION);
+  db = mongoClient.db(process.env.DATABASE);
   console.log(
     chalk.bold.blue(
       `Connected to database ${chalk.bold.yellow(process.env.COLLECTION)}`
