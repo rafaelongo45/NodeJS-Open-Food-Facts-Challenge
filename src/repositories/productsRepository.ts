@@ -25,7 +25,7 @@ async function getSpecificProduct(code: number) {
   return product;
 }
 
-async function updateProduct(code: number, product, body) {
+async function updateProduct(code: number, body) {
   await db
     .collection("products")
     .updateOne({ code }, { $set: { ...body } });

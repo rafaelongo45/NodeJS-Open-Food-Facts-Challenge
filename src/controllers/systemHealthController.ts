@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import appStatus from "../services/getAppStatus.js";
+import appStatus from "../utils/getAppStatus.js";
 import cronRepository from "../repositories/cronRepository.js";
 
 interface SystemHealth {
