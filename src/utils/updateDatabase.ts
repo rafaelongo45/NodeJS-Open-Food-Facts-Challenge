@@ -1,13 +1,17 @@
 import fs from "fs";
 import axios from "axios";
+import dotenv from "dotenv";
 import * as cron from "node-cron";
 
 import db from "../app.js";
 import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 
+dotenv.config();
+
 export function cronFunction() {
+  const cronTime = process.env.CRON_TIME;
   cron.schedule(
-    "0 20 14 * * *",
+    cronTime,
     async () => {
       await updateDb();
       await saveCronTime();
