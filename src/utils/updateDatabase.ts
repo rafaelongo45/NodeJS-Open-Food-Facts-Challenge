@@ -57,11 +57,10 @@ export async function updateDb() {
         for (let i = 0; i < names.length; i++) {
           const name = names[i].replace(".json.gz", ".txt");
           await insertToDB(name);
-          fs.unlinkSync(`src/utils/${names[i]}`);
           fs.unlinkSync(`src/utils/${name}`);
         }
       }
-    }, 10000);
+    }, 60000);
   } catch (e) {
     console.log(e);
   }

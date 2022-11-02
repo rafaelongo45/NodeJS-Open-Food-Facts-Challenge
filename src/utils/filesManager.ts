@@ -1,6 +1,7 @@
 import fs from "fs";
 import zlib from "zlib";
 import axios from "axios";
+import * as fsp from "fs/promises";
 
 import db from "../app.js";
 
@@ -18,18 +19,21 @@ export async function downloadFile(filename) {
 
 export async function extractFile(filename: string) {
   const name = filename.replace(".json.gz", ".txt");
-  const fileStream = fs.createReadStream(`./src/utils/${filename}`);
-  const unzip = zlib.createGunzip();
+  const file = await fsp.readFile(`./src/utils/${filename}`);
+  const unzipStream = zlib.createUnzip();
+  let bufferString = "";
   let sum = 0;
-  const writeStream = fs.createWriteStream(`./src/utils/${name}`);
-  fileStream
-    .pipe(
-      unzip.on("data", () => {
-        sum++;
-        if (sum > 6) fileStream.close();
-      })
-    )
-    .pipe(writeStream);
+  unzipStream.write(file);
+  unzipStream.on("data", (chunk) => {
+    bufferString += chunk.toString();
+    if (bufferString.indexOf("\n") > 0) sum++;
+    if (sum > 50) unzipStream.emit("end");
+  });
+  unzipStream.on("end", async () => {
+    unzipStream.destroy();
+    await fsp.writeFile(`./src/utils/${name}`, bufferString);
+    fs.unlink(`./src/utils/${filename}`, (err) => console.log(err));
+  });
 }
 
 export async function insertToDB(name) {
@@ -73,6 +77,4 @@ export async function insertToDB(name) {
   }
 
   await db.collection("filename").insertOne({ name: name });
-
-  return arr;
 }

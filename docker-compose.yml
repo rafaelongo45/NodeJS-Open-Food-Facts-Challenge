@@ -1,0 +1,24 @@
+services:
+  db_mongodb_food:
+    image: mongo
+    container_name: db_mongodb
+    restart: always
+    ports:
+      - 1234:27017
+    env_file:
+      - docker.env
+    volumes:
+      - mongo_db:/var/lib/mongodb/data
+
+  node_app_students:
+    container_name: open-food
+    build: .
+    ports:
+      - 5000:5000
+    depends_on:
+      - db_mongodb_food
+    env_file:
+      - docker.env
+
+volumes:
+  mongo_db:
