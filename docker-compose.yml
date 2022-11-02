@@ -7,8 +7,6 @@ services:
       - 1234:27017
     env_file:
       - docker.env
-    volumes:
-      - mongo_db:/var/lib/mongodb/data
 
   node_app:
     container_name: open-food
