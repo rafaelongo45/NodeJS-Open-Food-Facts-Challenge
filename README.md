@@ -77,6 +77,16 @@ CRON_TIME = 0 0 2 * * *
 
 This pattern makes the cron execute the function everyday at 02 A.M. The spaces between the characters are important!
 
+To run the project run the command
+```
+npm start
+```
+
+To run with docker
+```
+docker-compose up
+```
+
 ## 🚀 Routes <a name = "routes"></a>
 
 ```
