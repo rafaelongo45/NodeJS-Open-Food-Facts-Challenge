@@ -9,7 +9,9 @@ import { downloadFile, extractFile, insertToDB } from "./filesManager.js";
 dotenv.config();
 
 export function cronFunction() {
-  const cronTime = process.env.CRON_TIME;
+  const date = new Date();
+  const cronSubstitute = `0 ${date.getMinutes() + 5} ${date.getHours()} * * *`
+  const cronTime = process.env.CRON_TIME ? process.env.CRON_TIME : cronSubstitute;
   cron.schedule(
     cronTime,
     async () => {
