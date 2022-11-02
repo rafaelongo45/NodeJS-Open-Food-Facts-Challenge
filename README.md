@@ -13,6 +13,9 @@ This product was designed for the Coodesh NodeJs Challenge 20201030.
 
 This is a REST API that uses data from the Open Food Facts project. The goal is to help a team of nutritionists that work at Fitness Foods LC so they can quickly check nutritional information from various products.
 
+This application is live at:
+[Website](https://open-food-facts-api.onrender.com)
+
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
