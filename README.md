@@ -104,8 +104,8 @@ GET /products
 ```
 
 ```
-GET /products?page=1
-   - Route to get the 20 first products registered in the database
+GET /products?page=n
+   - Route to get 20 products registered in the database. Where "n" is the number of the page you want to check 
    - headers: {}
    - body:{}
 ```
