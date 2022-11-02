@@ -6,9 +6,7 @@ services:
     ports:
       - 1234:27017
     env_file:
-      - docker.env
-    volumes:
-      - mongo_db:/data/db
+      - .env.test
 
   node_app:
     container_name: open-food
@@ -18,7 +16,4 @@ services:
     depends_on:
       - db_mongodb_food
     env_file:
-      - docker.env
-
-volumes:
-  mongo_db:
+      - .env.test
